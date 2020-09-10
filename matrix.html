@@ -1,0 +1,107 @@
+<!Doctype Html>
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.0.0/lib/p5.js"></script>
+</script>
+  </head>
+  <body>
+    <script>
+    // Defining Symbol variables
+    var symbolSize = 15;
+    var streams = [];
+    
+    //Create and Draw set up of P5
+    function setup() {
+    //Create Canvas  
+      createCanvas(window.innerWidth, window.innerHeight);
+      background(0);
+      //Create Multiple Streams that are symbol wid
+      var x = 0;
+      var y = random(0,height/2);
+      for (var i = 0; i <= width/symbolSize;i++){
+          stream = new Stream();
+          stream.generateSymbols(x,y);
+          streams.push(stream);
+          x += symbolSize;
+
+      }
+      textSize(symbolSize);
+    }
+    
+    function draw() {
+        //Reset to black canvas every frame
+        background(0, 150);
+        //Rerender the symbol, essentially the movement animation
+        streams.forEach(function(stream){
+            stream.render();
+        });
+    }
+    
+    //Symbol Class
+    function Simbol(x,y,speed,first){
+    //Declaring Symbol properties  
+      this.x = x;
+      this.y = y;
+      this.value;
+      this.speed = speed; 
+      this.first = first;
+      this.switchInterval = round(random(2,20));
+    //Random Matrix Symbol Generated and set to this.setToRandomSymbol
+    this.setToRandomSymbol = function(){
+        //This if statement causes the swap in the this.render to not be 60 frames per second
+    if (frameCount % this.switchInterval == 0){
+        this.value = String.fromCharCode(
+        0x30A0 + round(random(0,96))
+    );
+    }
+}
+    //Rain function called in render
+    this.rain = function(){
+    if (this.y >= height){
+        this.y = 0;
+    } else{
+    this.y += this.speed;
+    }
+   // Alternative if statement this.y=(this.y >= height) ? 0 : this.y += this.speed;
+}
+    }
+//Creating a stream of symbols. Stream Class
+    function Stream(){
+        //properties of Stream
+        this.symbols = [];
+        this.totalSymbols = round(random(30,50));
+        this.speed = random(4,8);
+    //makes multiple symbol that are pushed to symbols. 
+        this.generateSymbols = function(x,y) {
+            var first = true;
+            for (var i = 0; i<= this.totalSymbols; i++){
+                symbol = new Simbol(x,y,this.speed,first);
+                symbol.setToRandomSymbol();
+                this.symbols.push(symbol);
+                y -= symbolSize; 
+                first = false;
+            }
+        }
+ //Render the generated symbol, with green font.. pretty :) Rain function causes symbol to rest
+    //this.setToRandomSymbol being called here causes the symbol to switch
+        this.render = function(){
+            this.symbols.forEach(function(symbol){
+                if (symbol.first == true) {
+                    fill(255,255,255);
+                } else{
+                    fill(0, 255, 180);
+                }
+                text(symbol.value, symbol.x, symbol.y);
+                symbol.rain();
+                symbol.setToRandomSymbol();
+            });
+        }
+
+    }
+</script>
+
+    </body>
+</html>
+
+
+
